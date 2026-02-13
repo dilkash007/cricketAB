@@ -20,27 +20,26 @@ dotenv.config();
  */
 
 // Hard-fix for Render connection issues: 
-// If it's the Supabase host, use the known IPv4 IP to bypass IPv6 ENETUNREACH errors
+// Supabase Transaction Pooler usually works better on port 6543
 const rawHost = process.env.CRICKET_DB_HOST || 'localhost';
-const DB_HOST = rawHost === 'db.zehrxdlqoccqrppfpcwk.supabase.co'
-    ? '185.38.109.200'
-    : rawHost;
+// Use the session-based pooler host or direct IP
+const DB_HOST = rawHost;
+const DB_PORT = rawHost.includes('supabase.co') ? 6543 : parseInt(process.env.CRICKET_DB_PORT || '5432');
 
-console.log('🔗 Database Host resolved to:', DB_HOST);
+console.log(`🔗 Database: ${DB_HOST}:${DB_PORT}`);
 
 export const cricketPool = new Pool({
     host: DB_HOST,
     user: process.env.CRICKET_DB_USER || 'postgres',
     password: process.env.CRICKET_DB_PASSWORD,
     database: process.env.CRICKET_DB_NAME || 'postgres',
-    port: parseInt(process.env.CRICKET_DB_PORT || '5432'),
+    port: DB_PORT,
     ssl: process.env.CRICKET_DB_SSL === 'true' ? {
-        rejectUnauthorized: false,
-        // family 4 can be passed here in some versions of node/tls
+        rejectUnauthorized: false
     } : false,
-    max: 20,
+    max: 10,
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 10000 // Increased timeout
+    connectionTimeoutMillis: 15000
 });
 
 /**
