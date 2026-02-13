@@ -1,0 +1,20 @@
+# Rewrite all requests to our Node.js application
+DirectoryIndex disabled
+RewriteEngine On
+RewriteBase /
+
+# Stop Apache from serving static files directly if we want Node to handle it
+# But usually we let Node serve the dist folder
+
+# Clear existing handlers
+<IfModule mod_passenger.c>
+    PassengerEnabled On
+    PassengerAppRoot /home/saasmartz/backend
+    PassengerAppType node
+    PassengerStartupFile app.js
+</IfModule>
+
+# Handle typical Node.js proxying if passenger is not handling it
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ http://127.0.0.1:5005/$1 [P,L]

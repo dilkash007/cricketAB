@@ -1,0 +1,7 @@
+{
+  "name": "Elite Admin Betting Dashboard",
+  "description": "A high-performance real-time operational dashboard for system administrators to manage vendors, users, finances, and system health in a betting ecosystem.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
