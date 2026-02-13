@@ -23,6 +23,13 @@ dotenv.config();
 
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dns from 'dns';
+
+// Force IPv4 over IPv6 to prevent ENETUNREACH errors on platforms like Render
+if (typeof dns.setDefaultResultOrder === 'function') {
+    dns.setDefaultResultOrder('ipv4first');
+}
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -175,7 +182,8 @@ app.get('/health', (req: Request, res: Response) => {
     });
 });
 
-// Root endpoint
+// Root endpoint (Commented out to let React Frontend take over)
+/*
 app.get('/', (req: Request, res: Response) => {
     res.json({
         message: 'Elite Betting Admin API',
@@ -190,6 +198,7 @@ app.get('/', (req: Request, res: Response) => {
         }
     });
 });
+*/
 
 // ============================================
 // SITE-SPECIFIC ROUTES
