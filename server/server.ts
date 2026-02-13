@@ -23,12 +23,6 @@ dotenv.config();
 
 import path from 'path';
 import { fileURLToPath } from 'url';
-import dns from 'dns';
-
-// Force IPv4 over IPv6 to prevent ENETUNREACH errors on platforms like Render
-if (typeof dns.setDefaultResultOrder === 'function') {
-    dns.setDefaultResultOrder('ipv4first');
-}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

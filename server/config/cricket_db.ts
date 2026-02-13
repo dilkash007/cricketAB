@@ -1,3 +1,9 @@
+import dns from 'dns';
+// Force IPv4 over IPv6 to prevent ENETUNREACH errors on platforms like Render/Supabase
+if (typeof dns.setDefaultResultOrder === 'function') {
+    dns.setDefaultResultOrder('ipv4first');
+}
+
 import pkg from 'pg';
 const { Pool } = pkg;
 import dotenv from 'dotenv';
