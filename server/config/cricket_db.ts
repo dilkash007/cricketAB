@@ -39,7 +39,15 @@ export const cricketPool = new Pool({
     } : false,
     max: 10,
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 15000
+    connectionTimeoutMillis: 15000,
+    //@ts-ignore - 'lookup' exists in pg Client config which Pool accepts
+    lookup: (hostname: string, options: any, callback: any) => {
+        // Force IPv4 by specifying family: 4
+        dns.lookup(hostname, { family: 4 }, (err, address, family) => {
+            console.log(`🔍 DNS Lookup: ${hostname} -> ${address} (IPv${family})`);
+            callback(err, address, family);
+        });
+    }
 });
 
 /**
