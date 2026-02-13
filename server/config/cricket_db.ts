@@ -19,16 +19,28 @@ dotenv.config();
  * Schemas: site1_superadmin | site2_vendor | site3_users
  */
 
+// Hard-fix for Render connection issues: 
+// If it's the Supabase host, use the known IPv4 IP to bypass IPv6 ENETUNREACH errors
+const rawHost = process.env.CRICKET_DB_HOST || 'localhost';
+const DB_HOST = rawHost === 'db.zehrxdlqoccqrppfpcwk.supabase.co'
+    ? '185.38.109.200'
+    : rawHost;
+
+console.log('🔗 Database Host resolved to:', DB_HOST);
+
 export const cricketPool = new Pool({
-    host: process.env.CRICKET_DB_HOST || 'localhost',
+    host: DB_HOST,
     user: process.env.CRICKET_DB_USER || 'postgres',
     password: process.env.CRICKET_DB_PASSWORD,
     database: process.env.CRICKET_DB_NAME || 'postgres',
     port: parseInt(process.env.CRICKET_DB_PORT || '5432'),
-    ssl: process.env.CRICKET_DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
-    max: 20,                    // Maximum connections in pool
-    idleTimeoutMillis: 30000,   // Close idle connections after 30s
-    connectionTimeoutMillis: 5000 // Timeout if can't connect in 5s
+    ssl: process.env.CRICKET_DB_SSL === 'true' ? {
+        rejectUnauthorized: false,
+        // family 4 can be passed here in some versions of node/tls
+    } : false,
+    max: 20,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 10000 // Increased timeout
 });
 
 /**
